@@ -34,6 +34,12 @@ public class DetailActivity extends AppCompatActivity {
 
         binding.tittleText.setText(object.getTitle());
         binding.recipeView.setText(object.getRecipe());
+        binding.imageView3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent
+            }
+        });
         binding.button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
