@@ -39,7 +39,7 @@ public class MainActivity3 extends AppCompatActivity {
             } else if (itemId == ahahaNavId) {
                 replaceFragment(new CookFragment());
             } else if (itemId == profNavId) {
-                replaceFragment(new ProfileFragment());
+                replaceFragment(new MoreFragment());
             }
 
             return true;

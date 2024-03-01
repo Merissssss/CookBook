@@ -3,7 +3,6 @@ package com.example.myapplication.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -16,12 +15,13 @@ import com.example.myapplication.databinding.RecipesBinding;
 import com.example.myapplication.domain.Domain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Foods extends RecyclerView.Adapter<Foods.Recipes> {
 
-    ArrayList<Domain> items;
-    Context context;
-    RecipesBinding binding;
+    private List<Domain> items;
+    private Context context;
+    private RecipesBinding binding;
 
     public Foods(ArrayList<Domain> items) {
         this.items = items;
@@ -30,7 +30,7 @@ public class Foods extends RecyclerView.Adapter<Foods.Recipes> {
     @NonNull
     @Override
     public Foods.Recipes onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        binding=RecipesBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+        binding = RecipesBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         context = parent.getContext();
         return new Recipes(binding);
     }
@@ -39,19 +39,19 @@ public class Foods extends RecyclerView.Adapter<Foods.Recipes> {
     public void onBindViewHolder(@NonNull Foods.Recipes holder, int position) {
         binding.textView.setText(items.get(position).getTitle());
 
-        int drawableRecourse = holder.itemView.getResources()
+        int drawableResource = holder.itemView.getResources()
                 .getIdentifier(String.valueOf(items.get(position).getPicUrl()),
-                "drawable", holder.itemView.getContext().getPackageName());
+                        "drawable", holder.itemView.getContext().getPackageName());
 
         Glide.with(context)
-                .load(drawableRecourse)
+                .load(drawableResource)
                 .transform(new GranularRoundedCorners(30, 30, 0, 0))
                 .into(binding.imageView);
 
         holder.itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("object", items.get(position));
-                context.startActivity(intent);
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("object", items.get(position));
+            context.startActivity(intent);
         });
     }
 
