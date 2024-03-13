@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners;
 import com.example.myapplication.Activity.DetailActivity;
+import com.example.myapplication.Activity.FavList;
 import com.example.myapplication.databinding.RecipesBinding;
 import com.example.myapplication.domain.Domain;
 
@@ -22,6 +23,8 @@ public class Foods extends RecyclerView.Adapter<Foods.Recipes> {
     private List<Domain> items;
     private Context context;
     private RecipesBinding binding;
+    private FavList favDB;
+
 
     public Foods(ArrayList<Domain> items) {
         this.items = items;
@@ -30,6 +33,7 @@ public class Foods extends RecyclerView.Adapter<Foods.Recipes> {
     @NonNull
     @Override
     public Foods.Recipes onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         binding = RecipesBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         context = parent.getContext();
         return new Recipes(binding);
@@ -53,6 +57,8 @@ public class Foods extends RecyclerView.Adapter<Foods.Recipes> {
             intent.putExtra("object", items.get(position));
             context.startActivity(intent);
         });
+
+
     }
 
     @Override
