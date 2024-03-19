@@ -15,17 +15,15 @@ import com.example.myapplication.databinding.FragmentHomeBinding;
 import com.example.myapplication.domain.Domain;
 import java.util.ArrayList;
 
-// ... (other import statements)
 
 public class HomeFragment extends Fragment {
     FragmentHomeBinding binding;
     ImageView imageView;
     private RecyclerView recyclerView;
 
-    private ArrayList<FoodItem> foodItems = new ArrayList<>();
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
@@ -43,7 +41,6 @@ public class HomeFragment extends Fragment {
 
 
         recyclerView.setAdapter(foodsAdapter);
-
         return view;
     }
 }

@@ -10,7 +10,7 @@
     app:cardCornerRadius="20dp">
 
     <View
-        android:id="@+id/view4"
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_gravity="center"
         android:layout_height="80dp"
@@ -37,14 +37,13 @@
 
 
     <ImageView
-        android:id="@+id/imageView7"
+        android:id="@+id/favBtn"
         android:layout_width="70dp"
         android:layout_height="80dp"
         app:srcCompat="@drawable/liked"
         android:layout_gravity="center|end"
         android:layout_marginEnd="8dp"/>
 
-<!--    there is button in video, but image in my code this <<liked>>-->
 
 
 </androidx.cardview.widget.CardView>

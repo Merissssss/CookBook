@@ -35,7 +35,7 @@ public class MainActivity3 extends AppCompatActivity {
             if (itemId == homeNavId) {
                 replaceFragment(new HomeFragment());
             } else if (itemId == potNavId) {
-                replaceFragment(new SavedFragment());
+                replaceFragment(new FavFragment());
             } else if (itemId == ahahaNavId) {
                 replaceFragment(new CookFragment());
             } else if (itemId == profNavId) {

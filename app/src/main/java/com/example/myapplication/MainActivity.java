@@ -27,29 +27,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    public void validInput() {
-//        String givenEmail = editTextEmail.getText().toString().trim();
-//        String givenPassword = editTextPassword.getText().toString().trim();
-//
-//        String email = "arevshatyanmary@gmail.com";
-//        String password = "12345678";
-//
-//        if (!givenEmail.matches(email)) {
-//            editTextEmail.setError("Enter a valid email address");
-//            Toast.makeText(getApplicationContext(), "Enter a valid email address", Toast.LENGTH_SHORT).show();
-//        }
-//        if (!givenPassword.matches(password)) {
-//            editTextPassword.setError("Password should be at least 8 characters");
-//            Toast.makeText(getApplicationContext(), "Password should be at least 8 characters", Toast.LENGTH_SHORT).show();
-//        }
-//        if (givenPassword.length() < 8) {
-//            editTextPassword.setError("Password should be at least 8 characters");
-//            Toast.makeText(getApplicationContext(), "Password should be at least 8 characters", Toast.LENGTH_SHORT).show();
-//        } else if (givenEmail.matches(email) && givenPassword.matches(password) && givenPassword.length()==8){
-//            openActivity3();
-//        }
-//    }
-
     public void openActivity2() {
         Intent intent = new Intent(this, MainActivity2.class);
         startActivity(intent);

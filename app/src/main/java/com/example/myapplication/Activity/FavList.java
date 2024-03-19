@@ -10,14 +10,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class FavList extends SQLiteOpenHelper {
-    private static int DB_VERSION;
-    private static String DATABASE_NAME = "Foods";
-    private static String TABLE_NAME = "favoriteTable";
-    public static String KEY_ID = "id";
-    public static String ITEM_TITTLE = "itemTittle";
-    public static String ITEM_IMAGE = "itemImage";
-    public static String FAVORITE_STATUS = "fStatus";
-    private static String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
+    private static final int DB_VERSION = 1; // Set the database version to 1
+    private static final String DATABASE_NAME = "Foods";
+    private static final String TABLE_NAME = "favoriteTable";
+    public static final String KEY_ID = "id";
+    public static final String ITEM_TITTLE = "itemTittle";
+    public static final String ITEM_IMAGE = "itemImage";
+    public static final String FAVORITE_STATUS = "fStatus";
+    private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
             KEY_ID + " TEXT, " + ITEM_TITTLE + " TEXT," + ITEM_IMAGE + " TEXT)";
 
     public FavList(Context context) {
@@ -74,8 +74,8 @@ public class FavList extends SQLiteOpenHelper {
 
     public Cursor select_all_favorite_list() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE " + FAVORITE_STATUS+"= '1'";
-        return db.rawQuery(sql,null,null);
-
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE " + FAVORITE_STATUS + " = '1'";
+        return db.rawQuery(sql, null);
     }
+
 }

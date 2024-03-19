@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/hdfhfh"
-    tools:context=".Activity.SavedFragment">
+    tools:context=".Activity.FavFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -38,7 +38,7 @@
             <View
                 android:id="@+id/view2"
                 android:layout_width="wrap_content"
-                android:layout_height="170dp"
+                android:layout_height="100dp"
                 android:background="@drawable/top_background"
                 app:layout_anchor="@+id/view2"
                 app:layout_anchorGravity="center" />
@@ -56,7 +56,15 @@
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    </RelativeLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_marginTop="140dp"
+            android:layout_marginBottom="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/fav_item" />
 
+    </RelativeLayout>
 
 </FrameLayout>
