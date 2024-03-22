@@ -71,7 +71,7 @@
         android:background="#30ffffff"
         android:padding="20dp"
         android:hint="Password"
-        android:inputType="textEmailAddress" />
+        android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/re_password"
@@ -87,7 +87,7 @@
         android:ems="13"
         android:textColor="@color/black"
         android:hint="Re-Password"
-        android:inputType="textEmailAddress"
+        android:inputType="textPassword"
         android:padding="20dp" />
 
 
@@ -115,7 +115,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/signUpBtn"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="28sp"
+        android:layout_marginTop="8sp"
         android:text="Login"
         android:textColor="@color/white"
         android:textSize="20dp" />

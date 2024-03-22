@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextNumberPassword);
         progressBar = findViewById(R.id.progressbar);
         textView = findViewById(R.id.singuptext);
+        mAuth = FirebaseAuth.getInstance();
 
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +92,6 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             }
                         });
-
             }
         });
 

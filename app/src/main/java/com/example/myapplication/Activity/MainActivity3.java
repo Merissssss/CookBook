@@ -7,9 +7,13 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.ActivityMain3Binding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity3 extends AppCompatActivity {
     ActivityMain3Binding binding;
