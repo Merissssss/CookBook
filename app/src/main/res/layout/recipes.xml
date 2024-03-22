@@ -35,10 +35,11 @@
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
+        android:maxWidth="100dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="Pizza"
-        android:textSize="18dp"
+        android:textSize="16dp"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/view" />

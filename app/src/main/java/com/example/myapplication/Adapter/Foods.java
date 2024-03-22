@@ -51,7 +51,6 @@ public class Foods extends RecyclerView.Adapter<Foods.Recipes> {
                 .transform(new GranularRoundedCorners(30, 30, 0, 0))
                 .into(binding.imageView);
 
-        // Get the liked status from SharedPreferences
         SharedPreferences sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         boolean isLiked = sharedPreferences.getBoolean("liked_" + position, false);
         if (isLiked) {
