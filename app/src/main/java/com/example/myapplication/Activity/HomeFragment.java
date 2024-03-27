@@ -11,7 +11,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.Adapter.Foods;
-import com.example.myapplication.Category.CategoryActivity;
+import com.example.myapplication.Category.BreakfastActivity;
+import com.example.myapplication.Category.DessertActivity;
+import com.example.myapplication.Category.DinnerActivity;
+import com.example.myapplication.Category.LunchActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentHomeBinding;
 import com.example.myapplication.domain.Domain;
@@ -40,28 +43,28 @@ public class HomeFragment extends Fragment {
         breakfast.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CategoryActivity.class);
+                Intent intent = new Intent(getActivity(), BreakfastActivity.class);
                 startActivity(intent);
             }
         });
         dinner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CategoryActivity.class);
+                Intent intent = new Intent(getActivity(), LunchActivity.class);
                 startActivity(intent);
             }
         });
         supper.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CategoryActivity.class);
+                Intent intent = new Intent(getActivity(), DinnerActivity.class);
                 startActivity(intent);
             }
         });
         desert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CategoryActivity.class);
+                Intent intent = new Intent(getActivity(), DessertActivity.class);
                 startActivity(intent);
             }
         });
