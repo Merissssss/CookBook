@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/hdfhfh"
+    android:background="@color/white"
     tools:context=".Activity.MoreFragment">
 
     <RelativeLayout
@@ -159,6 +159,57 @@
                     tools:ignore="ContentDescription" />
             </LinearLayout>
         </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_marginTop="300sp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="90sp"
+                android:layout_marginRight="10sp"
+                android:layout_marginLeft="10sp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/myRecipes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/softPurple"
+                    android:text="My recipes" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardView"
+                        android:layout_width="50sp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="1dp"
+                        android:backgroundTint="@color/softPurple"
+                        app:cardCornerRadius="30dp"
+                        app:cardElevation="4dp">
+
+                        <ImageView
+                            android:id="@+id/imageView2"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/plus" />
+
+                    </androidx.cardview.widget.CardView>
+                </RelativeLayout>
+
+
+            </LinearLayout>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </RelativeLayout>
 </FrameLayout>

@@ -15,6 +15,9 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.AddRecipeActivity"
+            android:exported="false" />
+        <activity
             android:name=".Category.DessertActivity"
             android:exported="false" />
         <activity
@@ -26,10 +29,6 @@
         <activity
             android:name=".Category.BreakfastActivity"
             android:exported="false" />
-        <activity
-            android:name=".Category.CategoryActivity"
-            android:exported="false"
-            android:label="@string/title_activity_category" />
         <activity
             android:name=".Activity.SettingsActivity"
             android:exported="false" />

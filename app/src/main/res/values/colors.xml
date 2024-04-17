@@ -2,12 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="whhh">#EE6C6B6B</color>
+    <color name="whhh">#C68A8989</color>
     <color name="green">#1DF40E</color>
     <color name="darkPurple">#4D0063</color>
     <color name="softBlack">#E4E2E2</color>
     <color name="softGrey">#EDEDEDED</color>
-    <color name="softPurple">#EB47005A</color>
+    <color name="softPurple">#EB3D024C</color>
+    <color name="softPurple2">#EB8C17AA</color>
     <color name="purple">#2E003A</color>
     <color name="red">#ED7C0000</color>
 </resources>

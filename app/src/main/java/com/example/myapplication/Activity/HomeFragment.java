@@ -2,10 +2,12 @@ package com.example.myapplication.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,8 +19,16 @@ import com.example.myapplication.Category.DinnerActivity;
 import com.example.myapplication.Category.LunchActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentHomeBinding;
+import com.example.myapplication.domain.Category;
 import com.example.myapplication.domain.Domain;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class HomeFragment extends Fragment {
@@ -26,8 +36,12 @@ public class HomeFragment extends Fragment {
     ImageView breakfast;
     ImageView dinner;
     ImageView supper;
+    List<Domain> foodList;
+    Foods foodAdapter;
     ImageView desert;
-    private RecyclerView recyclerView;
+    FirebaseFirestore db;
+    FirebaseUser currentUser;
+    FirebaseAuth mAuth;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,6 +49,8 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+
+        ////Category
         breakfast = view.findViewById(R.id.breakfastIcon);
         dinner = view.findViewById(R.id.dinnerIcon);
         supper = view.findViewById(R.id.supperIcon);
@@ -68,24 +84,71 @@ public class HomeFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        initGlobalFields();
 
-        recyclerView = view.findViewById(R.id.RecipesView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.setHasFixedSize(true);
-
-
-        ArrayList<Domain> items = new ArrayList<>();
-        items.add(new Domain("Pizza", R.drawable.pizza, "1. 500 grams of flour \n 2. 1 teaspoon of yeast \n 3. 100-150grams of lukewarm water \n 4. 1 egg \n 5. half teaspoon of salt \n 6. 3 spoons of vegetable oil\n 7. mix it all up\n "));
-        items.add(new Domain("Corn Dog", R.drawable.corn_dog, "cook"));
-        items.add(new Domain("Ramen", R.drawable.ramen, "cook"));
-        items.add(new Domain("Strawberry Ice-cream", R.drawable.strawberryicecream, "cook"));
-        items.add(new Domain("Omelette", R.drawable.omelette, "cook"));
-        items.add(new Domain("Soup", R.drawable.sup, "cook"));
-
-        Foods foodsAdapter = new Foods(items);
-
-
-        recyclerView.setAdapter(foodsAdapter);
         return view;
     }
+
+    private void initGlobalFields() {
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        initRecyclerView();
+    }
+
+    private void fetchDataFromFirestore() {
+        if (isAdded()) {
+            foodList = new ArrayList<>(); // Initialize foodList
+
+            CollectionReference recipesCollection = db.collection("Food");
+
+            recipesCollection.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Domain recipe = document.toObject(Domain.class);
+                        foodList.add(recipe);
+                        foodAdapter.notifyItemInserted(foodList.size());
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Failed to fetch data from Firestore", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+
+
+    private void setProductRecycler(List<Domain> foodList) {
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        binding.RecipesView.setLayoutManager(layoutManager);
+        foodAdapter = new Foods(requireContext(), foodList, R.layout.recipes);
+        binding.RecipesView.setAdapter(foodAdapter);
+    }
+    private void fetchUnreadCount() {
+        binding.unreadProgressBar.setVisibility(View.VISIBLE);
+
+        db.collection("Notifications")
+                .whereEqualTo("ownerId", currentUser.getUid())
+                .whereEqualTo("read", false)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        int count = task.getResult().size();
+                        if (count != 0) {
+                            binding.unreadCount.setText(String.valueOf(count));
+                        }
+                    } else {
+                        Log.d("UnreadCount", "Error getting documents: ", task.getException());
+                    }
+                    binding.unreadProgressBar.setVisibility(View.GONE);
+                    binding.notificationNumberContainer.setVisibility(View.VISIBLE);
+                });
+    }
+    private void initRecyclerView() {
+        foodList = new ArrayList<>();
+        fetchDataFromFirestore();
+        setProductRecycler(foodList);
+        fetchUnreadCount();
+    }
+
 }

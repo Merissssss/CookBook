@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import com.example.myapplication.Adapter.Foods;
 import com.example.myapplication.R;
@@ -15,11 +16,15 @@ import java.util.ArrayList;
 
 public class DinnerActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
+    ImageView backBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dinner);
+
+        backBtn = findViewById(R.id.backBtn);
+        backBtn.setOnClickListener(v -> finish());
 
         recyclerView = findViewById(R.id.breakfastRecipes);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -27,12 +32,12 @@ public class DinnerActivity extends AppCompatActivity {
 
 
         ArrayList<Domain> items = new ArrayList<>();
-        items.add(new Domain("Pizza", R.drawable.pizza, "1. 500 grams of flour \n 2. 1 teaspoon of yeast \n 3. 100-150grams of lukewarm water \n 4. 1 egg \n 5. half teaspoon of salt \n 6. 3 spoons of vegetable oil\n 7. mix it all up\n "));
-        items.add(new Domain("Corn Dog", R.drawable.corn_dog, "cook"));
-        items.add(new Domain("Ramen", R.drawable.ramen, "cook"));
-        items.add(new Domain("Strawberry Ice-cream", R.drawable.strawberryicecream, "cook"));
-        items.add(new Domain("Omelette", R.drawable.omelette, "cook"));
-        items.add(new Domain("Soup", R.drawable.sup, "cook"));
+        items.add(new Domain());
+        items.add(new Domain());
+        items.add(new Domain());
+        items.add(new Domain());
+        items.add(new Domain());
+        items.add(new Domain());
 
         Foods foodsAdapter = new Foods(items);
 

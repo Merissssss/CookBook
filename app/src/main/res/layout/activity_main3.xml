@@ -35,7 +35,7 @@
                 app:labelVisibilityMode="labeled"
                 app:menu="@menu/bottom_menu"
                 android:background="@color/softPurple"
-                android:backgroundTint="@android:color/transparent"/>
+                android:backgroundTint="@color/white"/>
 
         </com.google.android.material.bottomappbar.BottomAppBar>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

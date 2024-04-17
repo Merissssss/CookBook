@@ -1,0 +1,19 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/colorTextView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:background="@drawable/edittext_background2"
+        android:gravity="center"
+        android:hint="Enter Your Color"
+        android:paddingHorizontal="15dp"
+        android:textColor="@color/whhh"
+        android:backgroundTint="@color/softGrey"
+        android:textStyle="bold" />
+</LinearLayout>

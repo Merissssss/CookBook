@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/hdfhfh"
+    android:background="@color/white"
     tools:context=".Activity.HomeFragment">
 
 
@@ -45,6 +45,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="25dp">
 
+
                     <TextView
                         android:id="@+id/textView1"
                         android:layout_width="wrap_content"
@@ -55,6 +56,67 @@
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="5sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/notifications"
+                            android:layout_width="30sp"
+                            android:layout_height="40sp"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/notifi"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="@color/white" />
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/notificationNumberContainer"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            app:cardBackgroundColor="@color/softPurple"
+                            app:cardCornerRadius="50dp"
+                            app:layout_constraintEnd_toEndOf="@+id/notifications"
+                            app:layout_constraintTop_toTopOf="@+id/notifications"
+                            tools:ignore="TextSizeCheck">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <TextView
+                                    android:id="@+id/unreadCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textColor="@color/white"
+                                    android:textSize="11sp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    tools:ignore="HardcodedText" />
+
+                                <ProgressBar
+                                    android:id="@+id/unreadProgressBar"
+                                    style="?android:attr/progressBarStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </androidx.cardview.widget.CardView>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
                     <TextView
                         android:id="@+id/textView2"
@@ -232,7 +294,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/bottomAppBar"
                 android:layout_gravity="bottom"
-                android:backgroundTint="@color/softPurple"
+                android:backgroundTint="@color/softPurple2"
                 app:fabCradleRoundedCornerRadius="50dp">
 
                 <com.google.android.material.bottomnavigation.BottomNavigationView

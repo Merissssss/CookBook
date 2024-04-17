@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/hdfhfh"
+    android:background="@color/white"
     tools:context=".Activity.FavFragment">
 
     <RelativeLayout
@@ -45,25 +45,25 @@
 
             <TextView
                 android:id="@+id/textView3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:textSize="20dp"
+                android:textSize="22sp"
                 android:layout_marginTop="20dp"
                 android:textColor="@color/white"
-                android:text="Your favorite foods..." />
+                android:text="Favorites"
+                android:gravity="center"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/favRecipes"
+                android:layout_width="match_parent"
+                android:layout_marginTop="120sp"
+                android:scrollbars="vertical"
+                android:layout_marginBottom="100sp"
+                android:layout_height="match_parent" />
 
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerview"
-            android:layout_marginTop="140dp"
-            android:layout_marginBottom="100dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/fav_item" />
 
     </RelativeLayout>
 

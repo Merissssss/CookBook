@@ -4,21 +4,25 @@
     <item
         android:id="@+id/home_nav"
         android:title="Home"
-        android:icon="@drawable/home_icon"/>
+        android:icon="@drawable/home_icon"
+        android:iconTint="@color/white"/>
 
     <item
         android:id="@+id/pot_nav"
         android:title="Favorite"
-        android:icon="@drawable/pot"/>
+        android:icon="@drawable/pot"
+        android:iconTint="@color/white"/>
 
     <item
         android:id="@+id/ahaha_nav"
         android:title="Cook"
-        android:icon="@drawable/ahaha"/>
+        android:icon="@drawable/ahaha"
+        android:iconTint="@color/white"/>
 
     <item
         android:id="@+id/prof_nav"
         android:icon="@drawable/more"
-        android:title="More" />
+        android:title="More"
+        android:iconTint="@color/white"/>
 
 </menu>
