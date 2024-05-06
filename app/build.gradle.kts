@@ -1,3 +1,6 @@
+import com.android.build.api.dsl.Packaging
+
+
 
 plugins {
     id("com.android.application")
@@ -5,6 +8,7 @@ plugins {
 }
 
 android {
+
     namespace = "com.example.myapplication"
     compileSdk = 34
 
@@ -36,6 +40,13 @@ android {
     }
 }
 
+
+android {
+    packagingOptions {
+        exclude("META-INF/NOTICE.md")
+    }
+}
+
 dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -55,6 +66,17 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
+    implementation ("com.firebaseui:firebase-ui-firestore:8.0.0")
+
     implementation("androidx.recyclerview:recyclerview:1.1.0")
     implementation("androidx.cardview:cardview:1.0.0")
+
+    // Firebase Dependencies
+    implementation("com.google.firebase:firebase-auth:22.2.0")
+    implementation("com.google.android.gms:play-services-auth:19.2.0")
+    implementation ("com.google.firebase:firebase-analytics:20.0.0")
+    implementation("com.google.firebase:firebase-database:20.3.0")
+    implementation ("com.google.firebase:firebase-firestore:24.6.0")
 }

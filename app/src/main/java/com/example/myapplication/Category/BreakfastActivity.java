@@ -32,20 +32,10 @@ public class BreakfastActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
 
-        ArrayList<Domain> items = new ArrayList<>();
-        items.add(new Domain());
-        items.add(new Domain());
-        items.add(new Domain());
-        items.add(new Domain());
-        items.add(new Domain());
-        items.add(new Domain());
-
-        Foods foodsAdapter = new Foods(items);
-
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
 
 
-        recyclerView.setAdapter(foodsAdapter);
+//        recyclerView.setAdapter(foodsAdapter);
     }
 }

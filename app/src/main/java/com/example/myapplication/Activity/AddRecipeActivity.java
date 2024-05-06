@@ -1,54 +1,52 @@
 package com.example.myapplication.Activity;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.myapplication.Adapter.ColorSizeAdapter;
 import com.example.myapplication.R;
-import com.example.myapplication.Category.Constants;
-import com.example.myapplication.domain.Domain;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.example.myapplication.databinding.ActivityAddRecipeBinding;
+import com.example.myapplication.domain.AddRecipeModel;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.example.myapplication.databinding.ActivityAddRecipeBinding;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 public class AddRecipeActivity extends AppCompatActivity {
-
-    private ActivityAddRecipeBinding binding;
-    private final int PICK_IMAGE_REQUEST = 1;
-    private static final String[] categories = Constants.categories;
-    private Domain productModel;
+    ActivityAddRecipeBinding binding;
+    private static final String TAG = "YourFragment";
+    private static final int PICK_IMAGE_REQUEST = 1;
     private FirebaseFirestore db;
-    private Uri imagePath;
-    private StorageReference storageReference;
-    private int selectedCategory = -1;
-    private ColorSizeAdapter colorAdapter;
-    private List<EditText> editTextList = new ArrayList<>();
-    private double latitude = -91;
-    private double longitude = 181;
-    private Bitmap bitmap;
+    private TextView name;
+    private TextView desc;
+    private ImageButton addBtn;
+    private String[] categories = {"Breakfast", "Lunch", "Dinner", "Desert"};
+
+    private int selectedCategory = 0;
+
+    private TextView category;
+    private ImageView productPhotoImageView;
+    private StorageReference storageRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,150 +54,112 @@ public class AddRecipeActivity extends AppCompatActivity {
         binding = ActivityAddRecipeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        initGlobalFields();
-        initListeners();
+        db = FirebaseFirestore.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
+
+        name = findViewById(R.id.product_name);
+        desc = findViewById(R.id.product_details);
+        category = findViewById(R.id.category_view);
+        addBtn = findViewById(R.id.btn_done);
+        addBtn.setOnClickListener(v -> {
+            saveDataToFirestore();
+        });
+
+        productPhotoImageView = findViewById(R.id.product_photo);
+        productPhotoImageView.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        });
+        category.setOnClickListener(v -> {
+            selectCategory();
+        });
     }
+
+    private void saveDataToFirestore() {
+        if (productPhotoImageView.getDrawable() == null) {
+            Toast.makeText(AddRecipeActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ((BitmapDrawable) productPhotoImageView.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageData = baos.toByteArray();
+
+        String imageName = UUID.randomUUID().toString() + ".jpg";
+        String imagePath = "images/" + imageName;
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference imageRef = storage.getReference().child(imagePath);
+
+
+        imageRef.putBytes(imageData)
+                .addOnSuccessListener(taskSnapshot -> {
+                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String imageUrl = uri.toString();
+                        Log.d(TAG, "Image uploaded. URL: " + imageUrl);
+
+                        Toast.makeText(AddRecipeActivity.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+
+                        saveDataToFirestore(imageUrl);
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error uploading image", e);
+                    Toast.makeText(AddRecipeActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void saveDataToFirestore(String imageUrl) {
+        AddRecipeModel product = new AddRecipeModel(
+                name.getText().toString(),
+                category.getText().toString(),
+                desc.getText().toString(),
+                imageUrl
+        );
+
+        db.collection("products")
+                .add(product)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+                        Toast.makeText(AddRecipeActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                        Toast.makeText(AddRecipeActivity.this, "Failed to add product", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            imagePath = data.getData();
-            getIntent().putExtra("imagePath", imagePath.toString());
+            Uri imageUri = data.getData();
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
-                binding.productPhoto.setImageBitmap(bitmap);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+
+                productPhotoImageView.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-    private void initGlobalFields() {
-        db = FirebaseFirestore.getInstance();
-        imagePath = null;
-        productModel = new Domain();
-        productModel.setRecipe(db.collection("UnconfirmedProducts").document().getId());
-        List<EditText> colorItems = new ArrayList<>();
-        binding.colorRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        colorAdapter = new ColorSizeAdapter(colorItems);
-        binding.colorRecyclerView.setAdapter(colorAdapter);
-    }
-
-    private void initListeners() {
-        binding.CategoryView.setOnClickListener(v -> selectCategory());
-        binding.productPhoto.setOnClickListener(v -> chooseImage());
-        binding.btnDone.setOnClickListener(v -> submitProduct());
-        binding.moreColors.setOnClickListener(v -> {
-            if (binding.moreColorDetails.getVisibility() == View.VISIBLE) {
-                binding.moreColorDetails.setVisibility(View.GONE);
-            } else {
-                binding.moreColorDetails.setVisibility(View.VISIBLE);
-            }
-        });
-        binding.addItem.setOnClickListener(v -> {
-            EditText newEditText = new EditText(this);
-            colorAdapter.addItem(newEditText);
-            editTextList.add(newEditText);
-        });
-    }
-
-    private void chooseImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select product image"), PICK_IMAGE_REQUEST);
-    }
 
     private void selectCategory() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this); // Use 'this' instead of requireContext()
         builder.setTitle("Select category");
         builder.setSingleChoiceItems(categories, selectedCategory, (dialogInterface, i) -> {
-            binding.CategoryView.setText(categories[i]);
-            selectedCategory = i;
+            category.setText(categories[i]); // Set the selected category text to your TextView
+            selectedCategory = i; // Update the selected category index
         });
 
         builder.setNegativeButton("OK", null);
         builder.show();
-    }
-
-    private void submitProduct() {
-        String productName = binding.productName.getText().toString();
-        String category = binding.CategoryView.getText().toString();
-        String details = binding.productDetails.getText().toString();
-
-//
-//        dialogHud = new DialogHud(requireContext())
-//                .setMode(DialogHud.Mode.LOADING)
-//                .setLabel(R.string.uploading)
-//                .setLabelDetail(R.string.please_wait)
-//                .setCancelable(false);
-
-
-        if (productName.isEmpty()) {
-            showToast(getString(R.string.product_name_can_t_be_empty));
-            return;
-        }
-
-        if (category.isEmpty()) {
-            showToast(getString(R.string.you_must_select_product_category));
-            selectCategory();
-            return;
-        }
-
-
-        if (details.isEmpty()) {
-            showToast(getString(R.string.you_must_enter_product_details));
-            return;
-        }
-
-        String imagePathStr = getIntent().getStringExtra("imagePath");
-        if (imagePathStr != null) {
-            imagePath = Uri.parse(imagePathStr);
-            if (imagePath == null) {
-                showToast(getString(R.string.you_must_select_product_photo));
-                return;
-            }
-        }
-
-        productModel.setTitle(productName);
-        productModel.setCategory(category);
-
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            productModel.setSeller(currentUser.getDisplayName());
-            productModel.setSellerId(currentUser.getUid());
-        }
-
-        storageReference = FirebaseStorage.getInstance().getReference();
-
-        uploadToStorage();
-
-        Toast.makeText(getApplicationContext(), "Product submitted successfully", Toast.LENGTH_SHORT).show();
-
-        finish();
-    }
-    private void uploadToStorage() {
-        storageReference.child("products/" + productModel.getProductId()).putFile(imagePath)
-                .addOnSuccessListener(taskSnapshot -> storageReference.child("products/" + productModel.getProductId()).getDownloadUrl()
-                        .addOnSuccessListener(uri -> {
-                            productModel.setPhoto(uri.toString());
-                            uploadToFirestore();
-                        }));
-    }
-
-    private void uploadToFirestore() {
-        db.collection("UnconfirmedProducts").document(productModel.getProductId()).set(productModel)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(getApplicationContext(), "Product uploaded successfully", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getApplicationContext(), "Failed to upload product: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
-    }
-
-
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

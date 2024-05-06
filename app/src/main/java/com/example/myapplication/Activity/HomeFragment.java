@@ -1,5 +1,7 @@
 package com.example.myapplication.Activity;
 
+import static androidx.fragment.app.FragmentManager.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,9 +11,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.myapplication.Adapter.Foods;
 import com.example.myapplication.Category.BreakfastActivity;
 import com.example.myapplication.Category.DessertActivity;
@@ -19,16 +23,12 @@ import com.example.myapplication.Category.DinnerActivity;
 import com.example.myapplication.Category.LunchActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentHomeBinding;
-import com.example.myapplication.domain.Category;
 import com.example.myapplication.domain.Domain;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class HomeFragment extends Fragment {
@@ -36,15 +36,13 @@ public class HomeFragment extends Fragment {
     ImageView breakfast;
     ImageView dinner;
     ImageView supper;
-    List<Domain> foodList;
-    Foods foodAdapter;
     ImageView desert;
-    FirebaseFirestore db;
-    FirebaseUser currentUser;
-    FirebaseAuth mAuth;
+    ArrayList<Domain> listOfRecipes = new ArrayList<>();
+    private RecyclerView recyclerViewRecipes;
+    private FirebaseFirestore db;
+    private Foods recipeAdapter;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
@@ -84,71 +82,54 @@ public class HomeFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        initGlobalFields();
 
+
+
+
+
+        View root = inflater.inflate(R.layout.fragment_home, container, false);
+        db = FirebaseFirestore.getInstance();
+        getRecipe();
+
+        recyclerViewRecipes = root.findViewById(R.id.recipesView);
+        recipeAdapter = new Foods(listOfRecipes);
+        LinearLayoutManager popularLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerViewRecipes.setLayoutManager(popularLayoutManager);
+        recyclerViewRecipes.setAdapter(recipeAdapter);
         return view;
     }
 
-    private void initGlobalFields() {
-        db = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        initRecyclerView();
-    }
+    private void getRecipe() {
+        listOfRecipes.clear();
 
-    private void fetchDataFromFirestore() {
-        if (isAdded()) {
-            foodList = new ArrayList<>(); // Initialize foodList
-
-            CollectionReference recipesCollection = db.collection("Food");
-
-            recipesCollection.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Domain recipe = document.toObject(Domain.class);
-                        foodList.add(recipe);
-                        foodAdapter.notifyItemInserted(foodList.size());
-                    }
-                } else {
-                    Toast.makeText(requireContext(), "Failed to fetch data from Firestore", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-
-
-
-    private void setProductRecycler(List<Domain> foodList) {
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        binding.RecipesView.setLayoutManager(layoutManager);
-        foodAdapter = new Foods(requireContext(), foodList, R.layout.recipes);
-        binding.RecipesView.setAdapter(foodAdapter);
-    }
-    private void fetchUnreadCount() {
-        binding.unreadProgressBar.setVisibility(View.VISIBLE);
-
-        db.collection("Notifications")
-                .whereEqualTo("ownerId", currentUser.getUid())
-                .whereEqualTo("read", false)
+        // Get the Firestore collection reference
+        db.collection("recipes")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        int count = task.getResult().size();
-                        if (count != 0) {
-                            binding.unreadCount.setText(String.valueOf(count));
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            // Iterate through each document in the collection
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                Log.i(TAG, "Document data: " + document.getData());
+                                // Parse the document data and add it to the ArrayList
+                                String name = document.getString("name");
+                                String description = document.getString("description");
+                                String imageUrl = document.getString("imageUrl");
+                                listOfRecipes.add(new Domain(name, description, imageUrl));
+                            }
+                            // Notify the adapter if needed
+                            recipeAdapter.notifyDataSetChanged();
+                        } else {
+                            Log.w(TAG, "Error getting documents: query snapshot is null");
+                            Toast.makeText(requireContext(), "Error getting data from Firestore", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Log.d("UnreadCount", "Error getting documents: ", task.getException());
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                        Toast.makeText(requireContext(), "Error getting data from Firestore", Toast.LENGTH_SHORT).show();
                     }
-                    binding.unreadProgressBar.setVisibility(View.GONE);
-                    binding.notificationNumberContainer.setVisibility(View.VISIBLE);
                 });
     }
-    private void initRecyclerView() {
-        foodList = new ArrayList<>();
-        fetchDataFromFirestore();
-        setProductRecycler(foodList);
-        fetchUnreadCount();
-    }
+
 
 }

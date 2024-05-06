@@ -32,12 +32,6 @@ public class DinnerActivity extends AppCompatActivity {
 
 
         ArrayList<Domain> items = new ArrayList<>();
-        items.add(new Domain());
-        items.add(new Domain());
-        items.add(new Domain());
-        items.add(new Domain());
-        items.add(new Domain());
-        items.add(new Domain());
 
         Foods foodsAdapter = new Foods(items);
 

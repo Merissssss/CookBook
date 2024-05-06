@@ -114,8 +114,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/edittext_background2"
                     android:maxLines="1"
-                    android:textColorHint="@color/whhh" />
-
+                    android:textColor="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -137,7 +136,7 @@
                 app:hintEnabled="false">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/Category_view"
+                    android:id="@+id/category_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/edittext_background2"
@@ -145,7 +144,7 @@
                     android:focusable="false"
                     android:inputType="number"
                     android:maxLines="1"
-                    android:textColorHint="@color/whhh" />
+                    android:textColorHint="@color/editTextColor" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
