@@ -37,7 +37,7 @@ import java.util.UUID;
 
 public class AddRecipeActivity extends AppCompatActivity {
     ActivityAddRecipeBinding binding;
-    private static final String TAG = "YourFragment";
+    private static final String TAG = "AddRecipeActivity";
     private static final int PICK_IMAGE_REQUEST = 1;
     private FirebaseFirestore db;
     private TextView name;
@@ -69,7 +69,6 @@ public class AddRecipeActivity extends AppCompatActivity {
         addBtn = findViewById(R.id.btn_done);
         addBtn.setOnClickListener(v -> {
             saveDataToFirestore();
-            finish();
         });
 
         productPhotoImageView = findViewById(R.id.product_photo);
@@ -83,16 +82,19 @@ public class AddRecipeActivity extends AppCompatActivity {
         // Check if the READ_EXTERNAL_STORAGE permission is not granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
+            // Request the permission
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
         } else {
-            initiateImagePicker();
+            // Permission is already granted, proceed with accessing the image
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, PICK_IMAGE_REQUEST);
         }
-    }
-    private void initiateImagePicker() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+
+        recipeModel = new AddRecipeModel(name.getText().toString(), category.getText().toString(), desc.getText().toString(), TAG);
+        recipeModel.setProductId(db.collection("UnconfirmedProducts").document().getId());
+
     }
 
     @Override
@@ -102,6 +104,9 @@ public class AddRecipeActivity extends AppCompatActivity {
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
             // Check if the permission has been granted
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, proceed with accessing the image
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, PICK_IMAGE_REQUEST);
             } else {
                 // Permission denied, handle accordingly (e.g., show a message or disable functionality)
                 Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
@@ -114,19 +119,15 @@ public class AddRecipeActivity extends AppCompatActivity {
             Toast.makeText(AddRecipeActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
             return;
         }
-        recipeModel = new AddRecipeModel(name.getText().toString(), category.getText().toString(), desc.getText().toString(), TAG);
-        recipeModel.setProductId(db.collection("UnconfirmedProducts").document().getId());
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ((BitmapDrawable) productPhotoImageView.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageData = baos.toByteArray();
 
         String imageName = UUID.randomUUID().toString() + ".jpg";
-
         String imagePath = "images/" + imageName;
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
-
         StorageReference imageRef = storage.getReference().child(imagePath);
 
         imageRef.putBytes(imageData)
@@ -135,8 +136,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                         String imageUrl = uri.toString();
                         Log.d(TAG, "Image uploaded. URL: " + imageUrl);
 
-                        Toast.makeText(AddRecipeActivity.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-
+                        // Now that the image is uploaded, save the recipe data to Firestore
                         saveDataToFirestore(imageUrl);
                     });
                 })
@@ -145,27 +145,25 @@ public class AddRecipeActivity extends AppCompatActivity {
                     Log.e(TAG, "Error uploading image", e);
                     Toast.makeText(AddRecipeActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
                 });
-        uploadToStorage();
     }
 
     private void saveDataToFirestore(String imageUrl) {
-        // Check if imageUrl is null or empty
         if (imageUrl == null || imageUrl.isEmpty()) {
             Log.e(TAG, "Image URL is null or empty");
             Toast.makeText(AddRecipeActivity.this, "Image URL is null or empty", Toast.LENGTH_SHORT).show();
             return; // Exit the method if imageUrl is null or empty
         }
 
-        // If imageUrl is not null or empty, proceed to add the product data to Firestore
-        AddRecipeModel product = new AddRecipeModel(
-                name.getText().toString(),
-                category.getText().toString(),
-                desc.getText().toString(),
-                imageUrl
-        );
+        if (recipeModel == null) {
+            Log.e(TAG, "recipeModel is null");
+            Toast.makeText(AddRecipeActivity.this, "Recipe data is null", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        recipeModel.setImageAlpha(imageUrl);
 
         db.collection("Recipes")
-                .add(product)
+                .add(recipeModel)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
@@ -173,6 +171,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                         Toast.makeText(AddRecipeActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
                         // Call uploadToStorage() after Firestore save is successful
                         uploadToStorage();
+                        finish(); // Add finish() here to close the activity
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -183,6 +182,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -204,6 +204,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
         }
     }
+
     private void uploadToStorage() {
         if (imagePath != null) {
             storageRef.child("products/" + recipeModel.getProductId())
@@ -221,8 +222,6 @@ public class AddRecipeActivity extends AppCompatActivity {
             Toast.makeText(AddRecipeActivity.this, "Image path is null", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     private void selectCategory() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this); // Use 'this' instead of requireContext()

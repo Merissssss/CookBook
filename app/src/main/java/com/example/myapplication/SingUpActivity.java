@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class SingUpActivity extends AppCompatActivity {
 
-
     EditText editTextEmail, editTextPassword;
     Button button;
     FirebaseAuth mAuth;
@@ -39,7 +38,6 @@ public class SingUpActivity extends AppCompatActivity {
             finish();
         }
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +57,6 @@ public class SingUpActivity extends AppCompatActivity {
             }
         });
 
-
-
         button = findViewById(R.id.signUpBtn);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,28 +75,45 @@ public class SingUpActivity extends AppCompatActivity {
                     return;
                 }
 
+                // Create user with email and password
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(SingUpActivity.this, "Account created", Toast.LENGTH_SHORT)
-                                            .show();
+                                    sendEmailVerification(); // Send email verification
                                 } else {
-                                    Toast.makeText(SingUpActivity.this, "Authentication failed", Toast.LENGTH_SHORT)
-                                            .show();
+                                    Toast.makeText(SingUpActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
             }
         });
-
-
     }
 
-    public void openActivity2() {
+    // Send email verification
+    private void sendEmailVerification() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            user.sendEmailVerification()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(SingUpActivity.this, "Verification email sent", Toast.LENGTH_SHORT).show();
+                                openMainActivity3(); // Open MainActivity3 after verification email is sent
+                            } else {
+                                Toast.makeText(SingUpActivity.this, "Failed to send verification email", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
+    }
+
+    public void openMainActivity3() {
         Intent intent = new Intent(this, MainActivity3.class);
         startActivity(intent);
+        finish();
     }
 }
