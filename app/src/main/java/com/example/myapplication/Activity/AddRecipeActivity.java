@@ -2,13 +2,14 @@ package com.example.myapplication.Activity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.Manifest;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +18,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.ActivityAddRecipeBinding;
@@ -40,13 +43,16 @@ public class AddRecipeActivity extends AppCompatActivity {
     private TextView name;
     private TextView desc;
     private ImageButton addBtn;
+    Uri imagePath;
     private String[] categories = {"Breakfast", "Lunch", "Dinner", "Desert"};
 
     private int selectedCategory = 0;
 
     private TextView category;
+    AddRecipeModel recipeModel;
     private ImageView productPhotoImageView;
     private StorageReference storageRef;
+    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         addBtn = findViewById(R.id.btn_done);
         addBtn.setOnClickListener(v -> {
             saveDataToFirestore();
+            finish();
         });
 
         productPhotoImageView = findViewById(R.id.product_photo);
@@ -73,6 +80,33 @@ public class AddRecipeActivity extends AppCompatActivity {
         category.setOnClickListener(v -> {
             selectCategory();
         });
+        // Check if the READ_EXTERNAL_STORAGE permission is not granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        } else {
+            initiateImagePicker();
+        }
+    }
+    private void initiateImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
+            // Check if the permission has been granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            } else {
+                // Permission denied, handle accordingly (e.g., show a message or disable functionality)
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void saveDataToFirestore() {
@@ -80,17 +114,20 @@ public class AddRecipeActivity extends AppCompatActivity {
             Toast.makeText(AddRecipeActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
             return;
         }
+        recipeModel = new AddRecipeModel(name.getText().toString(), category.getText().toString(), desc.getText().toString(), TAG);
+        recipeModel.setProductId(db.collection("UnconfirmedProducts").document().getId());
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ((BitmapDrawable) productPhotoImageView.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageData = baos.toByteArray();
 
         String imageName = UUID.randomUUID().toString() + ".jpg";
+
         String imagePath = "images/" + imageName;
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference imageRef = storage.getReference().child(imagePath);
 
+        StorageReference imageRef = storage.getReference().child(imagePath);
 
         imageRef.putBytes(imageData)
                 .addOnSuccessListener(taskSnapshot -> {
@@ -104,12 +141,22 @@ public class AddRecipeActivity extends AppCompatActivity {
                     });
                 })
                 .addOnFailureListener(e -> {
+                    // Error occurred while uploading the image
                     Log.e(TAG, "Error uploading image", e);
                     Toast.makeText(AddRecipeActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
                 });
+        uploadToStorage();
     }
 
     private void saveDataToFirestore(String imageUrl) {
+        // Check if imageUrl is null or empty
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            Log.e(TAG, "Image URL is null or empty");
+            Toast.makeText(AddRecipeActivity.this, "Image URL is null or empty", Toast.LENGTH_SHORT).show();
+            return; // Exit the method if imageUrl is null or empty
+        }
+
+        // If imageUrl is not null or empty, proceed to add the product data to Firestore
         AddRecipeModel product = new AddRecipeModel(
                 name.getText().toString(),
                 category.getText().toString(),
@@ -117,13 +164,15 @@ public class AddRecipeActivity extends AppCompatActivity {
                 imageUrl
         );
 
-        db.collection("products")
+        db.collection("Recipes")
                 .add(product)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
                         Toast.makeText(AddRecipeActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
+                        // Call uploadToStorage() after Firestore save is successful
+                        uploadToStorage();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -141,15 +190,39 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             Uri imageUri = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-
-                productPhotoImageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (imageUri != null) {
+                // Set the imagePath to the selected image URI
+                imagePath = imageUri;
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                    productPhotoImageView.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(this, "Failed to retrieve image URI", Toast.LENGTH_SHORT).show();
             }
         }
     }
+    private void uploadToStorage() {
+        if (imagePath != null) {
+            storageRef.child("products/" + recipeModel.getProductId())
+                    .putFile(imagePath)
+                    .addOnSuccessListener(taskSnapshot -> storageRef.child("products/" + recipeModel.getProductId())
+                            .getDownloadUrl()
+                            .addOnSuccessListener(uri -> {
+                                recipeModel.setImageAlpha(uri.toString());
+                                saveDataToFirestore();
+                            }))
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(AddRecipeActivity.this, getString(R.string.failed_to_upload_photo) + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(AddRecipeActivity.this, "Image path is null", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
     private void selectCategory() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this); // Use 'this' instead of requireContext()

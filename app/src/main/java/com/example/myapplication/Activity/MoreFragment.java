@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
@@ -20,9 +21,10 @@ public class MoreFragment extends Fragment {
 
         TextView textView = view.findViewById(R.id.accountsettings);
 
-        CardView cardView = view.findViewById(R.id.cardView);
+        ImageView imageView = view.findViewById(R.id.imageView2);
 
-        cardView.setOnClickListener(new View.OnClickListener() {
+
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddRecipeActivity.class);

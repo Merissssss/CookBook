@@ -2,6 +2,7 @@ package com.example.myapplication.Activity;
 
 import static androidx.fragment.app.FragmentManager.TAG;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,10 +44,8 @@ public class HomeFragment extends Fragment {
     private Foods recipeAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
-
 
         ////Category
         breakfast = view.findViewById(R.id.breakfastIcon);
@@ -87,17 +86,17 @@ public class HomeFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         getRecipe();
 
-        recyclerViewRecipes = root.findViewById(R.id.recipesView);
+        recyclerViewRecipes = binding.recipesView;
         recipeAdapter = new Foods(listOfRecipes);
-        LinearLayoutManager popularLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerViewRecipes.setLayoutManager(popularLayoutManager);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerViewRecipes.setLayoutManager(layoutManager);
         recyclerViewRecipes.setAdapter(recipeAdapter);
+
         return view;
     }
 
+    @SuppressLint("RestrictedApi")
     private void getRecipe() {
-        listOfRecipes.clear();
-
         // Get the Firestore collection reference
         db.collection("recipes")
                 .get()
@@ -114,18 +113,16 @@ public class HomeFragment extends Fragment {
                                 String imageUrl = document.getString("imageUrl");
                                 listOfRecipes.add(new Domain(name, description, imageUrl));
                             }
-                            // Notify the adapter if needed
                             recipeAdapter.notifyDataSetChanged();
                         } else {
                             Log.w(TAG, "Error getting documents: query snapshot is null");
-                            Toast.makeText(requireContext(), "Error getting data from Firestore", Toast.LENGTH_SHORT).show();
+                            requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), "Error getting data from Firestore", Toast.LENGTH_SHORT).show());
                         }
                     } else {
                         Log.w(TAG, "Error getting documents.", task.getException());
-                        Toast.makeText(requireContext(), "Error getting data from Firestore", Toast.LENGTH_SHORT).show();
+                        requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), "Error getting data from Firestore", Toast.LENGTH_SHORT).show());
                     }
                 });
     }
-
 
 }

@@ -5,6 +5,7 @@ public class AddRecipeModel {
     private String category;
     private String description;
     private String imageAlpha;
+    private String productId;
 
     public AddRecipeModel() {
     }
@@ -26,6 +27,12 @@ public class AddRecipeModel {
 
     public String getCategory() {
         return category;
+    }
+    public String getProductId() {
+        return productId;
+    }
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public void setCategory(String category) {
