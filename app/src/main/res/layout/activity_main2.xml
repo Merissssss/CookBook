@@ -121,14 +121,16 @@
         android:textSize="20dp" />
 
     <TextView
+        android:id="@+id/info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/info"
-        android:text="or sign up with"
-        android:textSize="18dp"
-        android:textColor="@color/white"
         android:layout_above="@+id/socialIcons"
-        android:layout_centerHorizontal="true"/>
+        android:layout_below="@+id/loginBtn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60sp"
+        android:text="or sign up with"
+        android:textColor="@color/white"
+        android:textSize="18dp" />
 
     <LinearLayout
         android:layout_width="match_parent"

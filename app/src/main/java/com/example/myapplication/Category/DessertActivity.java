@@ -2,7 +2,6 @@ package com.example.myapplication.Category;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
@@ -10,15 +9,14 @@ import android.widget.ImageView;
 
 import com.example.myapplication.Adapter.Foods;
 import com.example.myapplication.R;
-import com.example.myapplication.domain.Domain;
+import com.example.myapplication.domain.AddRecipeModel;
 
 import java.util.ArrayList;
 
 public class DessertActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    ImageView backBtn;
-
+    private ImageView backBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,18 +26,9 @@ public class DessertActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.backBtn);
         backBtn.setOnClickListener(v -> finish());
 
-        recyclerView = findViewById(R.id.breakfastRecipes);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView = findViewById(R.id.dessertRecipes);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setHasFixedSize(true);
 
-
-        ArrayList<Domain> items = new ArrayList<>();
-
-        Foods foodsAdapter = new Foods(items);
-
-
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(foodsAdapter);
     }
 }

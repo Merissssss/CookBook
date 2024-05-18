@@ -10,8 +10,6 @@ import android.widget.ImageView;
 
 import com.example.myapplication.Adapter.Foods;
 import com.example.myapplication.R;
-import com.example.myapplication.domain.Domain;
-
 import java.util.ArrayList;
 
 public class BreakfastActivity extends AppCompatActivity {
@@ -35,7 +33,5 @@ public class BreakfastActivity extends AppCompatActivity {
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
 
-
-//        recyclerView.setAdapter(foodsAdapter);
     }
 }

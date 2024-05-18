@@ -67,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="16dp"
-                    android:text="tittle"
+                    android:text="title"
                     android:textSize="25dp"
                     android:textColor="@color/black"
                     android:textStyle="bold"/>
@@ -92,35 +92,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:textColor="@color/black"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_marginTop="40dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
-            <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="10dp"
-                android:layout_height="90dp"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:src="@drawable/purplelike" />
-
-
-            <Button
-                android:id="@+id/button3"
-                android:layout_width="266dp"
-                android:layout_height="58dp"
-                android:layout_margin="16dp"
-                android:backgroundTint="@color/purple"
-                android:text="Cook"
-                android:textColor="@color/white"
-                android:textSize="19dp"
-                android:textStyle="bold" />
-
-
-        </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

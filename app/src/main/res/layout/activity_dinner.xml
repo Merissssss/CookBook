@@ -60,7 +60,7 @@
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/breakfastRecipes"
+            android:id="@+id/dinnerRecipes"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>

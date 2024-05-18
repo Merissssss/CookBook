@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.ActivityAddRecipeBinding;
 import com.example.myapplication.domain.AddRecipeModel;
@@ -44,7 +45,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private TextView desc;
     private ImageButton addBtn;
     Uri imagePath;
-    private String[] categories = {"Breakfast", "Lunch", "Dinner", "Desert"};
+    private String[] categories = {"Breakfast", "Lunch", "Dinner", "Dessert"};
 
     private int selectedCategory = 0;
 
@@ -67,18 +68,15 @@ public class AddRecipeActivity extends AppCompatActivity {
         desc = findViewById(R.id.product_details);
         category = findViewById(R.id.category_view);
         addBtn = findViewById(R.id.btn_done);
-        addBtn.setOnClickListener(v -> {
-            saveDataToFirestore();
-        });
+        addBtn.setOnClickListener(v -> saveDataToFirestore());
 
         productPhotoImageView = findViewById(R.id.product_photo);
         productPhotoImageView.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
         });
-        category.setOnClickListener(v -> {
-            selectCategory();
-        });
+        category.setOnClickListener(v -> selectCategory());
+
         // Check if the READ_EXTERNAL_STORAGE permission is not granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -86,16 +84,32 @@ public class AddRecipeActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-        } else {
-            // Permission is already granted, proceed with accessing the image
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(intent, PICK_IMAGE_REQUEST);
         }
 
-        recipeModel = new AddRecipeModel(name.getText().toString(), category.getText().toString(), desc.getText().toString(), TAG);
-        recipeModel.setProductId(db.collection("UnconfirmedProducts").document().getId());
+        // Initialize the recipe model with the correct values
+        recipeModel = new AddRecipeModel(
+                name.getText().toString(),
+                category.getText().toString(),
+                desc.getText().toString(),
+                "", // Image URL will be set later
+                "", // Title can be set if necessary
+                db.collection("UnconfirmedProducts").document().getId()
+        );
 
+        // Retrieve AddRecipeModel object from intent extra
+        AddRecipeModel item = (AddRecipeModel) getIntent().getSerializableExtra("object");
+        if (item != null) {
+            // Do something with the retrieved AddRecipeModel object
+            // For example, you can set the name, description, category, etc.
+            name.setText(item.getName());
+            desc.setText(item.getDescription());
+            category.setText(item.getCategory());
+            // You may also need to load the image if you have one in the AddRecipeModel object
+            // For example:
+            Glide.with(this).load(item.getImageAlpha()).into(productPhotoImageView);
+        }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -182,7 +196,6 @@ public class AddRecipeActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

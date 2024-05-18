@@ -1,22 +1,30 @@
 package com.example.myapplication.domain;
 
-public class AddRecipeModel {
+import java.io.Serializable;
+
+public class AddRecipeModel implements Serializable {
     private String name;
     private String category;
     private String description;
     private String imageAlpha;
+    private String title;
     private String productId;
 
+    // Default constructor
     public AddRecipeModel() {
     }
 
-    public AddRecipeModel(String name, String category, String description, String imageAlpha) {
+    // Parameterized constructor
+    public AddRecipeModel(String name, String category, String description, String imageAlpha, String title, String productId) {
         this.name = name;
         this.category = category;
         this.description = description;
         this.imageAlpha = imageAlpha;
+        this.title = title;
+        this.productId = productId;
     }
 
+    // Getters and setters
     public String getName() {
         return name;
     }
@@ -27,12 +35,6 @@ public class AddRecipeModel {
 
     public String getCategory() {
         return category;
-    }
-    public String getProductId() {
-        return productId;
-    }
-    public void setProductId(String productId) {
-        this.productId = productId;
     }
 
     public void setCategory(String category) {
@@ -53,5 +55,21 @@ public class AddRecipeModel {
 
     public void setImageAlpha(String imageAlpha) {
         this.imageAlpha = imageAlpha;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 }

@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,105 +23,74 @@ import com.example.myapplication.Category.DinnerActivity;
 import com.example.myapplication.Category.LunchActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentHomeBinding;
-import com.example.myapplication.domain.Domain;
+import com.example.myapplication.domain.AddRecipeModel;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
-
 public class HomeFragment extends Fragment {
-    FragmentHomeBinding binding;
-    ImageView breakfast;
-    ImageView dinner;
-    ImageView supper;
-    ImageView desert;
-    ArrayList<Domain> listOfRecipes = new ArrayList<>();
-    private RecyclerView recyclerViewRecipes;
-    private FirebaseFirestore db;
-    private Foods recipeAdapter;
 
+    FragmentHomeBinding binding;
+    private ArrayList<AddRecipeModel> listOfRecipes = new ArrayList<>();
+    private RecyclerView recyclerViewRecipes;
+    private Foods recipeAdapter;
+    private FirebaseFirestore db;
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        ////Category
-        breakfast = view.findViewById(R.id.breakfastIcon);
-        dinner = view.findViewById(R.id.dinnerIcon);
-        supper = view.findViewById(R.id.supperIcon);
-        desert = view.findViewById(R.id.desertIcon);
-
-        breakfast.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), BreakfastActivity.class);
-                startActivity(intent);
-            }
-        });
-        dinner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), LunchActivity.class);
-                startActivity(intent);
-            }
-        });
-        supper.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), DinnerActivity.class);
-                startActivity(intent);
-            }
-        });
-        desert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), DessertActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
-        db = FirebaseFirestore.getInstance();
-        getRecipe();
-
-        recyclerViewRecipes = binding.recipesView;
-        recipeAdapter = new Foods(listOfRecipes);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerViewRecipes.setLayoutManager(layoutManager);
-        recyclerViewRecipes.setAdapter(recipeAdapter);
+        setupCategoryIcons();
+        setupRecyclerView();
 
         return view;
     }
 
+    private void setupCategoryIcons() {
+        binding.breakfastIcon.setOnClickListener(v -> startActivity(new Intent(getActivity(), BreakfastActivity.class)));
+        binding.dinnerIcon.setOnClickListener(v -> startActivity(new Intent(getActivity(), LunchActivity.class)));
+        binding.supperIcon.setOnClickListener(v -> startActivity(new Intent(getActivity(),DinnerActivity.class)));
+        binding.desertIcon.setOnClickListener(v -> startActivity(new Intent(getActivity(), DessertActivity.class)));
+    }
+
+    private void setupRecyclerView() {
+        db = FirebaseFirestore.getInstance();
+        getRecipesFromFirestore();
+
+        recyclerViewRecipes = binding.recipesView;
+        recipeAdapter = new Foods(listOfRecipes);
+        recyclerViewRecipes.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerViewRecipes.setAdapter(recipeAdapter);
+    }
+
     @SuppressLint("RestrictedApi")
-    private void getRecipe() {
-        // Get the Firestore collection reference
-        db.collection("recipes")
+    private void getRecipesFromFirestore() {
+        db.collection("Recipes")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
                         if (querySnapshot != null) {
-                            // Iterate through each document in the collection
                             for (QueryDocumentSnapshot document : querySnapshot) {
-                                Log.i(TAG, "Document data: " + document.getData());
-                                // Parse the document data and add it to the ArrayList
-                                String name = document.getString("name");
-                                String description = document.getString("description");
-                                String imageUrl = document.getString("imageUrl");
-                                listOfRecipes.add(new Domain(name, description, imageUrl));
+                                AddRecipeModel recipe = document.toObject(AddRecipeModel.class);
+                                listOfRecipes.add(recipe);
                             }
                             recipeAdapter.notifyDataSetChanged();
                         } else {
                             Log.w(TAG, "Error getting documents: query snapshot is null");
-                            requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), "Error getting data from Firestore", Toast.LENGTH_SHORT).show());
+                            showToast("Error retrieving data from Firestore");
                         }
                     } else {
-                        Log.w(TAG, "Error getting documents.", task.getException());
-                        requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), "Error getting data from Firestore", Toast.LENGTH_SHORT).show());
+                        Log.w(TAG, "Error getting documents", task.getException());
+                        showToast("Error retrieving data from Firestore");
                     }
                 });
     }
 
+    private void showToast(String message) {
+        requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show());
+    }
 }

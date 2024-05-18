@@ -1,53 +1,65 @@
 package com.example.myapplication.Activity;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.Toast;
 
-import com.example.myapplication.R;
-import com.example.myapplication.databinding.ActivityRecipeBinding;
-import com.example.myapplication.domain.Domain;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-
+import com.example.myapplication.databinding.ActivityRecipeBinding;
+import com.example.myapplication.domain.AddRecipeModel;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class DetailActivity extends AppCompatActivity {
 
     private ActivityRecipeBinding binding;
-    private Domain object;
+    private AddRecipeModel object;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityRecipeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        
-        getBundles();
+
+        String recipeId = getIntent().getStringExtra("recipeId"); // Use the correct key "recipeId"
+        if (recipeId != null) {
+            fetchRecipeFromFirestore(recipeId);
+        } else {
+            Toast.makeText(this, "Recipe ID is missing", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
-    private void getBundles() {
-        object = (Domain) getIntent().getSerializableExtra("object");
+    private void fetchRecipeFromFirestore(String recipeId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference recipeRef = db.collection("Recipes").document(recipeId);
 
-        int drawableRecourseId = this.getResources().getIdentifier(String.valueOf(object.getPicUrl()),"drawable", this.getPackageName());
-
-        Glide.with(this).load(drawableRecourseId).into(binding.imageView8);
-
-        binding.tittleText.setText(object.getTitle());
-        binding.recipeView.setText(object.getRecipe());
-        binding.imageView3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent
+        recipeRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    AddRecipeModel recipeModel = document.toObject(AddRecipeModel.class);
+                    if (recipeModel != null) {
+                        updateUI(recipeModel);
+                    }
+                } else {
+                    Toast.makeText(this, "Recipe does not exist", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            } else {
+                Toast.makeText(this, "Error fetching recipe", Toast.LENGTH_SHORT).show();
             }
         });
-        binding.button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent
-            }
-        });
+    }
 
-        binding.imageView.setOnClickListener(v -> finish());
+    private void updateUI(AddRecipeModel recipeModel) {
+        Glide.with(this)
+                .load(recipeModel.getImageAlpha())
+                .into(binding.imageView8);
 
+        binding.tittleText.setText(recipeModel.getTitle());
     }
 }
