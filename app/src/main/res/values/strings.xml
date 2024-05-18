@@ -31,9 +31,9 @@
         <string name="sign_in">Sign In</string>
         <string name="name">Name</string>
 
-        <string name="add_new_product">Add New Product</string>
+        <string name="add_new_product">Add New Recipe</string>
         <string name="product_photo">Product photo</string>
-        <string name="add_product_photo">Add product photo</string>
+        <string name="add_product_photo">Add recipe photo</string>
         <string name="product_name">Product name</string>
         <string name="product_description">Product Description</string>
         <string name="category">Category</string>

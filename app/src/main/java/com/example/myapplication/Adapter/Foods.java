@@ -1,5 +1,7 @@
 package com.example.myapplication.Adapter;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -47,7 +49,7 @@ public class Foods extends RecyclerView.Adapter<Foods.Recipes> {
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
-            intent.putExtra("recipeId", item.getProductId()); // Use the correct key "recipeId"
+            intent.putExtra("recipeId", item); // Use the correct key "recipeId"
             context.startActivity(intent);
         });
     }

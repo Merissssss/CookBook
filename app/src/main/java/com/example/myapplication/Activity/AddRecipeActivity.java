@@ -188,7 +188,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                        Toast.makeText(AddRecipeActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddRecipeActivity.this, "Recipe added!", Toast.LENGTH_SHORT).show();
                         finish(); // Close the activity
                     }
                 })
@@ -196,7 +196,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error adding document", e);
-                        Toast.makeText(AddRecipeActivity.this, "Failed to add product", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddRecipeActivity.this, "Failed to add recipe", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
