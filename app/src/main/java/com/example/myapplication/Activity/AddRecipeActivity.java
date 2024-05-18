@@ -134,6 +134,11 @@ public class AddRecipeActivity extends AppCompatActivity {
             return;
         }
 
+        // Update the recipeModel with the current user inputs
+        recipeModel.setName(name.getText().toString().trim());
+        recipeModel.setCategory(category.getText().toString().trim());
+        recipeModel.setDescription(desc.getText().toString().trim());
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ((BitmapDrawable) productPhotoImageView.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageData = baos.toByteArray();
@@ -149,6 +154,9 @@ public class AddRecipeActivity extends AppCompatActivity {
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String imageUrl = uri.toString();
                         Log.d(TAG, "Image uploaded. URL: " + imageUrl);
+
+                        // Update the recipeModel with the image URL
+                        recipeModel.setImageAlpha(imageUrl);
 
                         // Now that the image is uploaded, save the recipe data to Firestore
                         saveDataToFirestore(imageUrl);
@@ -174,8 +182,6 @@ public class AddRecipeActivity extends AppCompatActivity {
             return;
         }
 
-        recipeModel.setImageAlpha(imageUrl);
-
         db.collection("Recipes")
                 .add(recipeModel)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -183,9 +189,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
                         Toast.makeText(AddRecipeActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
-                        // Call uploadToStorage() after Firestore save is successful
-                        uploadToStorage();
-                        finish(); // Add finish() here to close the activity
+                        finish(); // Close the activity
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -196,6 +200,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
