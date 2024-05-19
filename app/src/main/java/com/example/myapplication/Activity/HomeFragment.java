@@ -1,7 +1,9 @@
 package com.example.myapplication.Activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +29,9 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
+    private static final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
-    private List<AddRecipeModel> listOfRecipes = new ArrayList<>();
-    private RecyclerView recyclerViewRecipes;
+    private ArrayList<AddRecipeModel> listOfRecipes = new ArrayList<>();
     private Foods recipeAdapter;
     private FirebaseFirestore db;
 
@@ -40,7 +42,7 @@ public class HomeFragment extends Fragment {
 
         setupCategoryIcons();
         setupRecyclerView();
-        setupSearchView(); // Add this line
+        setupSearchView();
 
         return view;
     }
@@ -55,13 +57,12 @@ public class HomeFragment extends Fragment {
     private void setupRecyclerView() {
         db = FirebaseFirestore.getInstance();
         getRecipesFromFirestore();
-
-        recyclerViewRecipes = binding.recipesView;
         recipeAdapter = new Foods(listOfRecipes);
-        recyclerViewRecipes.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerViewRecipes.setAdapter(recipeAdapter);
+        binding.recipesView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.recipesView.setAdapter(recipeAdapter);
     }
 
+    @SuppressLint("RestrictedApi")
     private void setupSearchView() {
         binding.search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -85,7 +86,7 @@ public class HomeFragment extends Fragment {
                 filteredList.add(recipe);
             }
         }
-        recipeAdapter.updateList(filteredList);
+        recipeAdapter.updateList(new ArrayList<>(filteredList)); // Convert to ArrayList
     }
 
     private void getRecipesFromFirestore() {
@@ -101,9 +102,11 @@ public class HomeFragment extends Fragment {
                             }
                             recipeAdapter.notifyDataSetChanged();
                         } else {
+                            Log.w(TAG, "Error getting documents: query snapshot is null");
                             showToast("Error retrieving data from Firestore");
                         }
                     } else {
+                        Log.w(TAG, "Error getting documents", task.getException());
                         showToast("Error retrieving data from Firestore");
                     }
                 });

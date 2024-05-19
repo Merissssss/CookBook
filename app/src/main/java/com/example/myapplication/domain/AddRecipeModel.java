@@ -9,6 +9,17 @@ public class AddRecipeModel implements Serializable {
     private String imageAlpha;
     private String title;
     private String productId;
+    private int likesCount; // This field stores the number of likes for the recipe
+
+    // Other fields and methods
+
+    public int getLikesCount() {
+        return likesCount;
+    }
+
+    public void setLikesCount(int likesCount) {
+        this.likesCount = likesCount;
+    }
 
     // Default constructor
     public AddRecipeModel() {

@@ -35,7 +35,6 @@
         android:layout_gravity="center|start"
         android:layout_marginStart="128dp"/>
 
-
     <ImageView
         android:id="@+id/favBtn"
         android:layout_width="70dp"
@@ -43,7 +42,4 @@
         app:srcCompat="@drawable/liked"
         android:layout_gravity="center|end"
         android:layout_marginEnd="8dp"/>
-
-
-
 </androidx.cardview.widget.CardView>

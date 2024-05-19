@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.myapplication.Activity.FavFragment;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.ActivityMain3Binding;
 import com.google.firebase.auth.FirebaseAuth;

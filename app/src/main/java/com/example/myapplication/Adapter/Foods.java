@@ -4,26 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners;
 import com.example.myapplication.Activity.DetailActivity;
 import com.example.myapplication.databinding.RecipesBinding;
 import com.example.myapplication.domain.AddRecipeModel;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
 
-    private List<AddRecipeModel> recipes;
+    private ArrayList<AddRecipeModel> items;
     private Context context;
 
-    public Foods(List<AddRecipeModel> recipes) {
-        this.recipes = recipes != null ? recipes : new ArrayList<>();
+    public Foods(ArrayList<AddRecipeModel> items) {
+        this.items = items;
     }
 
     @NonNull
@@ -37,29 +33,27 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecipesViewHolder holder, int position) {
-        AddRecipeModel item = recipes.get(position);
-
+        AddRecipeModel item = items.get(position);
         Glide.with(context)
                 .load(item.getImageAlpha()) // Assuming getImageAlpha() returns the URL of the image in Firestore
                 .transform(new GranularRoundedCorners(30, 30, 0, 0))
                 .into(holder.binding.imageView);
-
         holder.binding.textView.setText(item.getName());
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
-            intent.putExtra("recipeId", item); // Pass the recipe object
+            intent.putExtra("recipe", item); // Change key to "recipe"
             context.startActivity(intent);
         });
     }
 
     @Override
     public int getItemCount() {
-        return recipes.size();
+        return items.size();
     }
 
-    public void updateList(List<AddRecipeModel> newRecipes) {
-        recipes = newRecipes != null ? newRecipes : new ArrayList<>();
+    public void updateList(ArrayList<AddRecipeModel> newItems) {
+        this.items = newItems != null ? newItems : new ArrayList<>();
         notifyDataSetChanged();
     }
 
