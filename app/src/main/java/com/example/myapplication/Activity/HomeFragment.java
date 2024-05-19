@@ -1,21 +1,16 @@
 package com.example.myapplication.Activity;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.myapplication.Adapter.Foods;
 import com.example.myapplication.Category.BreakfastActivity;
 import com.example.myapplication.Category.DessertActivity;
@@ -27,13 +22,13 @@ import com.example.myapplication.domain.AddRecipeModel;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    FragmentHomeBinding binding;
-    private ArrayList<AddRecipeModel> listOfRecipes = new ArrayList<>();
+    private FragmentHomeBinding binding;
+    private List<AddRecipeModel> listOfRecipes = new ArrayList<>();
     private RecyclerView recyclerViewRecipes;
     private Foods recipeAdapter;
     private FirebaseFirestore db;
@@ -45,6 +40,7 @@ public class HomeFragment extends Fragment {
 
         setupCategoryIcons();
         setupRecyclerView();
+        setupSearchView(); // Add this line
 
         return view;
     }
@@ -52,7 +48,7 @@ public class HomeFragment extends Fragment {
     private void setupCategoryIcons() {
         binding.breakfastIcon.setOnClickListener(v -> startActivity(new Intent(getActivity(), BreakfastActivity.class)));
         binding.dinnerIcon.setOnClickListener(v -> startActivity(new Intent(getActivity(), LunchActivity.class)));
-        binding.supperIcon.setOnClickListener(v -> startActivity(new Intent(getActivity(),DinnerActivity.class)));
+        binding.supperIcon.setOnClickListener(v -> startActivity(new Intent(getActivity(), DinnerActivity.class)));
         binding.desertIcon.setOnClickListener(v -> startActivity(new Intent(getActivity(), DessertActivity.class)));
     }
 
@@ -66,7 +62,32 @@ public class HomeFragment extends Fragment {
         recyclerViewRecipes.setAdapter(recipeAdapter);
     }
 
-    @SuppressLint("RestrictedApi")
+    private void setupSearchView() {
+        binding.search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filterRecipes(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterRecipes(newText);
+                return false;
+            }
+        });
+    }
+
+    private void filterRecipes(String query) {
+        List<AddRecipeModel> filteredList = new ArrayList<>();
+        for (AddRecipeModel recipe : listOfRecipes) {
+            if (recipe.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(recipe);
+            }
+        }
+        recipeAdapter.updateList(filteredList);
+    }
+
     private void getRecipesFromFirestore() {
         db.collection("Recipes")
                 .get()
@@ -80,11 +101,9 @@ public class HomeFragment extends Fragment {
                             }
                             recipeAdapter.notifyDataSetChanged();
                         } else {
-                            Log.w(TAG, "Error getting documents: query snapshot is null");
                             showToast("Error retrieving data from Firestore");
                         }
                     } else {
-                        Log.w(TAG, "Error getting documents", task.getException());
                         showToast("Error retrieving data from Firestore");
                     }
                 });
