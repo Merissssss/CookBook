@@ -44,26 +44,30 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
     public void onBindViewHolder(@NonNull RecipesViewHolder holder, int position) {
         AddRecipeModel item = items.get(position);
 
+        // Load image with Glide, handling null case
         if (item.getImageAlpha() != null) {
             Glide.with(context)
                     .load(item.getImageAlpha())
                     .transform(new GranularRoundedCorners(30, 30, 0, 0))
                     .into(holder.binding.imageView);
         } else {
-            holder.binding.imageView.setImageResource(R.drawable.liked);
+            holder.binding.imageView.setImageResource(R.drawable.notliked); // Use a placeholder image
         }
 
+        // Set recipe name, handling null case
         holder.binding.textView.setText(item.getName() != null ? item.getName() : "No Name");
 
+        // Set click listener for the item to open DetailActivity
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
             intent.putExtra("recipe", item);
             context.startActivity(intent);
         });
 
-        // Update the like button state
+        // Set like button state based on whether the item is liked
         holder.binding.like.setImageResource(item.isLiked() ? R.drawable.liked : R.drawable.notliked);
 
+        // Set click listener for the like button to add/remove recipe from favorites
         holder.binding.like.setOnClickListener(v -> {
             if (item.isLiked()) {
                 removeRecipeFromFavorites(item);
@@ -91,8 +95,7 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
         String productId = recipe.getProductId();
 
         if (productId == null) {
-            // Handle the case where productId is null
-            // For example, generate a new ID or log an error
+            // Generate a new product ID if null
             productId = UUID.randomUUID().toString();
             recipe.setProductId(productId);
         }
@@ -101,7 +104,7 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
                 .collection("favorites").document(productId);
 
         favoriteRef.set(recipe).addOnSuccessListener(aVoid -> {
-            // Optionally, show a message to the user
+            // Optionally, show a success message to the user
         }).addOnFailureListener(e -> {
             // Optionally, handle the error
         });
@@ -112,8 +115,7 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
         String productId = recipe.getProductId();
 
         if (productId == null) {
-            // Handle the case where productId is null
-            // For example, log an error and return
+            // If productId is null, do nothing
             return;
         }
 
@@ -121,12 +123,11 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
                 .collection("favorites").document(productId);
 
         favoriteRef.delete().addOnSuccessListener(aVoid -> {
-            // Optionally, show a message to the user
+            // Optionally, show a success message to the user
         }).addOnFailureListener(e -> {
             // Optionally, handle the error
         });
     }
-
 
     public static class RecipesViewHolder extends RecyclerView.ViewHolder {
         public RecipesBinding binding;

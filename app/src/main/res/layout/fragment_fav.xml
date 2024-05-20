@@ -41,6 +41,7 @@
                 android:layout_height="100dp"
                 android:background="@drawable/top_background"
                 app:layout_anchor="@+id/view2"
+                android:elevation="10sp"
                 app:layout_anchorGravity="center" />
 
             <TextView
@@ -51,6 +52,7 @@
                 android:textSize="22sp"
                 android:layout_marginTop="20dp"
                 android:textColor="@color/white"
+                android:elevation="10sp"
                 android:text="Favorites"
                 android:gravity="center"/>
 

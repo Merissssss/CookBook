@@ -1,50 +1,49 @@
 package com.example.myapplication.Activity;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.Adapter.Foods;
 import com.example.myapplication.R;
 import com.example.myapplication.domain.AddRecipeModel;
-import com.example.myapplication.databinding.FragmentFavBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
-import java.util.List;
 
 public class FavFragment extends Fragment {
-    private static final String TAG = "FavFragment";
-    private FragmentFavBinding binding;
+
+    private RecyclerView recyclerView;
     private Foods adapter;
-    private FirebaseAuth mAuth;
+    private ArrayList<AddRecipeModel> favoriteList;
     private FirebaseFirestore db;
-    private List<AddRecipeModel> favoriteList;
+    private FirebaseAuth mAuth;
 
-    public FavFragment() {
-        // Required empty public constructor
-    }
-
+    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentFavBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_fav, container, false);
 
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        recyclerView = view.findViewById(R.id.favRecipes); // Ensure this ID matches the XML layout
+        if (recyclerView == null) {
+            Log.e("FavFragment", "RecyclerView not found in layout.");
+        } else {
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        }
+
         favoriteList = new ArrayList<>();
-
-        RecyclerView recyclerView = binding.favRecipes;
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        adapter = new Foods((ArrayList<AddRecipeModel>) favoriteList);
+        adapter = new Foods(favoriteList);
         recyclerView.setAdapter(adapter);
+
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         fetchFavoriteRecipes();
 
@@ -52,8 +51,7 @@ public class FavFragment extends Fragment {
     }
 
     private void fetchFavoriteRecipes() {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = mAuth.getCurrentUser().getUid();
         db.collection("users").document(userId)
                 .collection("favorites")
                 .get()
@@ -66,10 +64,14 @@ public class FavFragment extends Fragment {
                         }
                         adapter.notifyDataSetChanged();
                     } else {
-                        Log.w(TAG, "Error getting documents.", task.getException());
+                        Log.w("FavFragment", "Error getting documents.", task.getException());
                     }
                 });
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchFavoriteRecipes(); // Refresh the favorite list whenever the fragment resumes
+    }
 }

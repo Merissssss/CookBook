@@ -28,7 +28,6 @@ public class MainActivity3 extends AppCompatActivity {
 
         final int homeNavId = R.id.home_nav;
         final int potNavId = R.id.pot_nav;
-        final int ahahaNavId = R.id.ahaha_nav;
         final int profNavId = R.id.prof_nav;
 
         replaceFragment(new HomeFragment());
@@ -41,8 +40,6 @@ public class MainActivity3 extends AppCompatActivity {
                 replaceFragment(new HomeFragment());
             } else if (itemId == potNavId) {
                 replaceFragment(new FavFragment());
-            } else if (itemId == ahahaNavId) {
-                replaceFragment(new CookFragment());
             } else if (itemId == profNavId) {
                 replaceFragment(new MoreFragment());
             }

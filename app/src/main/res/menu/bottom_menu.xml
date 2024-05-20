@@ -14,12 +14,6 @@
         android:iconTint="@color/white"/>
 
     <item
-        android:id="@+id/ahaha_nav"
-        android:title="Cook"
-        android:icon="@drawable/ahaha"
-        android:iconTint="@color/white"/>
-
-    <item
         android:id="@+id/prof_nav"
         android:icon="@drawable/more"
         android:title="More"
