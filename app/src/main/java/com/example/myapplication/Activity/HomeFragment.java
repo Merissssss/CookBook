@@ -21,6 +21,7 @@ import com.example.myapplication.Category.LunchActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentHomeBinding;
 import com.example.myapplication.domain.AddRecipeModel;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -90,8 +91,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void getRecipesFromFirestore() {
-        db.collection("Recipes")
-                .get()
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        db.collection("Recipes").get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
@@ -100,7 +102,7 @@ public class HomeFragment extends Fragment {
                                 AddRecipeModel recipe = document.toObject(AddRecipeModel.class);
                                 listOfRecipes.add(recipe);
                             }
-                            recipeAdapter.notifyDataSetChanged();
+                            checkLikedRecipes(userId);
                         } else {
                             Log.w(TAG, "Error getting documents: query snapshot is null");
                             showToast("Error retrieving data from Firestore");
@@ -111,6 +113,33 @@ public class HomeFragment extends Fragment {
                     }
                 });
     }
+
+    private void checkLikedRecipes(String userId) {
+        db.collection("users").document(userId).collection("favorites")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                String likedProductId = document.getId();
+                                for (AddRecipeModel recipe : listOfRecipes) {
+                                    if (likedProductId.equals(recipe.getProductId())) {
+                                        recipe.setLiked(true);
+                                        break;
+                                    }
+                                }
+                            }
+                            recipeAdapter.notifyDataSetChanged();
+                        } else {
+                            Log.w(TAG, "Error getting liked recipes: query snapshot is null");
+                        }
+                    } else {
+                        Log.w(TAG, "Error getting liked recipes", task.getException());
+                    }
+                });
+    }
+
 
     private void showToast(String message) {
         requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show());

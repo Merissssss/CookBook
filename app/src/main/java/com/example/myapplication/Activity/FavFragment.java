@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.Adapter.Foods;
@@ -35,7 +36,7 @@ public class FavFragment extends Fragment {
         if (recyclerView == null) {
             Log.e("FavFragment", "RecyclerView not found in layout.");
         } else {
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setLayoutManager(new GridLayoutManager(requireContext(),2));
         }
 
         favoriteList = new ArrayList<>();
@@ -60,6 +61,7 @@ public class FavFragment extends Fragment {
                         favoriteList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             AddRecipeModel recipe = document.toObject(AddRecipeModel.class);
+                            recipe.setLiked(true); // Mark the recipe as liked
                             favoriteList.add(recipe);
                         }
                         adapter.notifyDataSetChanged();

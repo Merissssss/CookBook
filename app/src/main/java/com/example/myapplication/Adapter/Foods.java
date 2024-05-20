@@ -2,6 +2,7 @@ package com.example.myapplication.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -51,7 +52,7 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
                     .transform(new GranularRoundedCorners(30, 30, 0, 0))
                     .into(holder.binding.imageView);
         } else {
-            holder.binding.imageView.setImageResource(R.drawable.notliked); // Use a placeholder image
+            holder.binding.imageView.setImageResource(R.drawable.favbtn); // Use a placeholder image
         }
 
         // Set recipe name, handling null case
@@ -65,7 +66,7 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
         });
 
         // Set like button state based on whether the item is liked
-        holder.binding.like.setImageResource(item.isLiked() ? R.drawable.liked : R.drawable.notliked);
+        holder.binding.like.setImageResource(item.isLiked() ? R.drawable.favbtn : R.drawable.notliked);
 
         // Set click listener for the like button to add/remove recipe from favorites
         holder.binding.like.setOnClickListener(v -> {
@@ -95,7 +96,6 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
         String productId = recipe.getProductId();
 
         if (productId == null) {
-            // Generate a new product ID if null
             productId = UUID.randomUUID().toString();
             recipe.setProductId(productId);
         }
@@ -103,10 +103,10 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
         DocumentReference favoriteRef = db.collection("users").document(userId)
                 .collection("favorites").document(productId);
 
-        favoriteRef.set(recipe).addOnSuccessListener(aVoid -> {
-            // Optionally, show a success message to the user
-        }).addOnFailureListener(e -> {
-            // Optionally, handle the error
+        recipe.setLiked(true);
+
+        favoriteRef.set(recipe).addOnSuccessListener(aVoid -> {}).addOnFailureListener(e -> {
+            Log.e("Foods", "Error adding recipe to favorites", e);
         });
     }
 
@@ -115,19 +115,19 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
         String productId = recipe.getProductId();
 
         if (productId == null) {
-            // If productId is null, do nothing
             return;
         }
 
         DocumentReference favoriteRef = db.collection("users").document(userId)
                 .collection("favorites").document(productId);
 
-        favoriteRef.delete().addOnSuccessListener(aVoid -> {
-            // Optionally, show a success message to the user
-        }).addOnFailureListener(e -> {
-            // Optionally, handle the error
+        recipe.setLiked(false);
+
+        favoriteRef.delete().addOnSuccessListener(aVoid -> {}).addOnFailureListener(e -> {
+            Log.e("Foods", "Error removing recipe from favorites", e);
         });
     }
+
 
     public static class RecipesViewHolder extends RecyclerView.ViewHolder {
         public RecipesBinding binding;

@@ -50,14 +50,14 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="600sp"
-        android:layout_marginTop="70sp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="75sp"
+        android:background="@color/softGrey"
         android:orientation="horizontal"
         app:circularflow_defaultRadius="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@color/softGrey"
-        android:layout_marginBottom="70sp"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
 
         <androidx.recyclerview.widget.RecyclerView
