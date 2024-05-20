@@ -10,15 +10,16 @@ public class AddRecipeModel implements Serializable {
     private String title;
     private String productId;
     private int likesCount; // This field stores the number of likes for the recipe
+    private boolean isLiked; // New field to track if the recipe is liked
 
     // Other fields and methods
 
-    public int getLikesCount() {
-        return likesCount;
+    public boolean isLiked() {
+        return isLiked;
     }
 
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
+    public void setLiked(boolean liked) {
+        isLiked = liked;
     }
 
     // Default constructor
@@ -33,6 +34,7 @@ public class AddRecipeModel implements Serializable {
         this.imageAlpha = imageAlpha;
         this.title = title;
         this.productId = productId;
+        this.isLiked = false; // Default value
     }
 
     // Getters and setters
@@ -68,19 +70,19 @@ public class AddRecipeModel implements Serializable {
         this.imageAlpha = imageAlpha;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getProductId() {
         return productId;
     }
 
     public void setProductId(String productId) {
         this.productId = productId;
+    }
+
+    public int getLikesCount() {
+        return likesCount;
+    }
+
+    public void setLikesCount(int likesCount) {
+        this.likesCount = likesCount;
     }
 }
