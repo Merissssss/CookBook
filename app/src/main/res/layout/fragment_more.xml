@@ -42,103 +42,41 @@
                 android:layout_height="150dp"
                 android:background="@drawable/top_background"
                 android:orientation="horizontal"
+                android:elevation="10sp"
                 app:layout_anchor="@+id/linearLayout"
                 app:layout_anchorGravity="start">
 
 
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="10sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="20dp"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:text="TextView" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:layout_below="@+id/textView5"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="12dp"
+                    android:textColor="@color/white"
+                    android:layout_marginEnd="35dp"
+                    android:textSize="17sp"
+                    android:text="TextView" />
 
             </RelativeLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_marginLeft="20sp"
-                android:layout_marginRight="20sp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/whitebackground"
-                android:orientation="vertical"
-                android:layout_marginTop="170dp"
-                android:elevation="10dp">
-
-            <LinearLayout
-                android:id="@+id/linearLayout44"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:orientation="horizontal">
-
-
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/settings"
-                    android:backgroundTint="#5856D6"
-                    app:tint="@color/white"
-                    tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:id="@+id/accountsettings"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Settings"
-                    android:textColor="@color/black"
-                    android:textSize="23sp"
-                    android:textStyle="normal"
-                    android:layout_marginStart="20dp"
-                    android:layout_gravity="center_vertical"/>
-
-                <ImageView
-                    android:layout_width="40sp"
-                    android:layout_height="50sp"
-                    android:src="@drawable/next"
-                    android:layout_gravity="center_vertical"
-                    tools:ignore="ContentDescription" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linear_out"
-                android:layout_width="match_parent"
-                android:layout_marginRight="20sp"
-                android:layout_marginLeft="20sp"
-                android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp">
-
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/notification"
-                    android:backgroundTint="#5856D6"
-                    app:tint="@color/white"
-                    tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:id="@+id/logOut"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="////////"
-                    android:textColor="@color/black"
-                    android:textStyle="normal"
-                    android:textSize="20sp"
-                    android:layout_marginStart="20dp"
-                    android:layout_gravity="center_vertical"/>
-
-                <ImageView
-                    android:layout_width="40sp"
-                    android:layout_height="50sp"
-                    android:src="@drawable/next"
-                    android:layout_gravity="center_vertical"
-                    tools:ignore="ContentDescription" />
-            </LinearLayout>
-        </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/linearLayout2"
-                android:layout_marginTop="300sp"
+                android:layout_marginTop="180sp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="90sp"
@@ -186,6 +124,15 @@
 
 
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="70sp"
+                android:layout_height="70sp"
+                android:src="@drawable/settings"
+                android:elevation="10sp"
+                app:layout_anchor="@+id/linearLayout"
+                app:layout_anchorGravity="end|top" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </RelativeLayout>
 </FrameLayout>
