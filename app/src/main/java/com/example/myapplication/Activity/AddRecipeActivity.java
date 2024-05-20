@@ -27,6 +27,7 @@ import com.example.myapplication.databinding.ActivityAddRecipeBinding;
 import com.example.myapplication.domain.AddRecipeModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -182,14 +183,28 @@ public class AddRecipeActivity extends AppCompatActivity {
             return;
         }
 
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Add recipe to main "Recipes" collection
         db.collection("Recipes")
                 .add(recipeModel)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                        Toast.makeText(AddRecipeActivity.this, "Recipe added!", Toast.LENGTH_SHORT).show();
-                        finish(); // Close the activity
+                        recipeModel.setProductId(documentReference.getId());
+                        // Also add recipe to user's "MyRecipe" collection
+                        db.collection("users").document(userId)
+                                .collection("MyRecipes").document(documentReference.getId())
+                                .set(recipeModel)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(AddRecipeActivity.this, "Recipe added!", Toast.LENGTH_SHORT).show();
+                                    finish(); // Close the activity
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.w(TAG, "Error adding document to user's collection", e);
+                                    Toast.makeText(AddRecipeActivity.this, "Failed to add recipe to user's collection", Toast.LENGTH_SHORT).show();
+                                });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

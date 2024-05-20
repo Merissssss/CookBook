@@ -128,7 +128,6 @@ public class Foods extends RecyclerView.Adapter<Foods.RecipesViewHolder> {
         });
     }
 
-
     public static class RecipesViewHolder extends RecyclerView.ViewHolder {
         public RecipesBinding binding;
 

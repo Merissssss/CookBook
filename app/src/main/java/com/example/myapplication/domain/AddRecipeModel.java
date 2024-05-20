@@ -73,5 +73,4 @@ public class AddRecipeModel implements Serializable {
     public void setProductId(String productId) {
         this.productId = productId;
     }
-
 }
