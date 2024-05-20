@@ -44,7 +44,7 @@
             android:layout_marginBottom="17sp"
             android:layout_toEndOf="@+id/backBtn"
             android:gravity="center"
-            android:text="Desert" />
+            android:text="Dessert" />
 
     </RelativeLayout>
 
