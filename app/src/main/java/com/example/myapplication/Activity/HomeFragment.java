@@ -8,23 +8,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.myapplication.Adapter.Foods;
 import com.example.myapplication.Category.BreakfastActivity;
 import com.example.myapplication.Category.DessertActivity;
 import com.example.myapplication.Category.DinnerActivity;
 import com.example.myapplication.Category.LunchActivity;
+import com.example.myapplication.LoginActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentHomeBinding;
 import com.example.myapplication.domain.AddRecipeModel;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,17 +39,31 @@ public class HomeFragment extends Fragment {
     private ArrayList<AddRecipeModel> listOfRecipes = new ArrayList<>();
     private Foods recipeAdapter;
     private FirebaseFirestore db;
+    private FirebaseUser user;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        // Check if user is logged in
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            redirectToLogin();
+            return view;
+        }
+
         setupCategoryIcons();
         setupRecyclerView();
         setupSearchView();
 
         return view;
+    }
+
+    private void redirectToLogin() {
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        startActivity(intent);
+        requireActivity().finish();
     }
 
     private void setupCategoryIcons() {
@@ -91,7 +109,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void getRecipesFromFirestore() {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if (user == null) {
+            return;
+        }
+        String userId = user.getUid();
 
         db.collection("Recipes").get()
                 .addOnCompleteListener(task -> {
@@ -115,6 +136,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void checkLikedRecipes(String userId) {
+        if (user == null) {
+            return;
+        }
         db.collection("users").document(userId).collection("favorites")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -139,7 +163,6 @@ public class HomeFragment extends Fragment {
                     }
                 });
     }
-
 
     private void showToast(String message) {
         requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show());
