@@ -87,6 +87,17 @@
         android:textColor="@color/white"
         android:textSize="25dp" />
 
+    <TextView
+        android:id="@+id/testMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/singuptext"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="42dp"
+        android:text="Guest Mode"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
 
 </RelativeLayout >

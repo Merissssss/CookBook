@@ -1,4 +1,3 @@
-
 package com.example.myapplication;
 
 import androidx.annotation.NonNull;
@@ -26,8 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     Button button;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
-    TextView textView;
-
+    TextView textView, testModeTextView;
 
     @Override
     public void onStart() {
@@ -39,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextNumberPassword);
         progressBar = findViewById(R.id.progressbar);
         textView = findViewById(R.id.singuptext);
+        testModeTextView = findViewById(R.id.testMode);
         mAuth = FirebaseAuth.getInstance();
 
         textView.setOnClickListener(new View.OnClickListener() {
@@ -58,15 +58,22 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button button = findViewById(R.id.loginBtn);
+        testModeTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editTextEmail.setText("sictst2@gmail.com");
+                editTextPassword.setText("Samsung2023");
+                login("sictst2@gmail.com", "Samsung2023");
+            }
+        });
 
+        button = findViewById(R.id.loginBtn);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressBar.setVisibility(View.VISIBLE);
-                String email, password;
-                email = editTextEmail.getText().toString();
-                password = editTextPassword.getText().toString();
+                String email = editTextEmail.getText().toString();
+                String password = editTextPassword.getText().toString();
 
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(LoginActivity.this, "Enter email", Toast.LENGTH_SHORT).show();
@@ -77,24 +84,26 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), MainActivity3.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                login(email, password);
             }
         });
+    }
 
-
+    private void login(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressBar.setVisibility(View.GONE);
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), MainActivity3.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 }
