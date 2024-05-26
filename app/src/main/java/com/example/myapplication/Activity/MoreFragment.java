@@ -35,6 +35,7 @@ public class MoreFragment extends Fragment {
     FirebaseUser user;
     RecyclerView recyclerView;
     Foods foodsAdapter;
+    TextView textView;
     ArrayList<AddRecipeModel> recipeList;
 
     @Override
@@ -43,6 +44,9 @@ public class MoreFragment extends Fragment {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+        textView = view.findViewById(R.id.textView7);
+        textView.setText(user.getEmail());
+
 
         recyclerView = view.findViewById(R.id.myRecipes);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
